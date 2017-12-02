@@ -2,10 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Guest from './Guest';
+import GuestPending from './GuestPending';
 
 function GustsList(props) {
   return (
       <ul>
+          <GuestPending name={props.GuestPending} />
           {props.guests
             .filter(guest => !props.isFiltered || guest.isConfirmed)
             .map((guest, index) => (
@@ -17,6 +19,7 @@ function GustsList(props) {
                   handleConfirmation={() => props.toggleConfirmationAt(index)}
                   handletoggleEditing={() => props.toggleEditingAt(index)}
                   setName={text => props.setNameAt(text, index)}
+                  handleRemove={() => props.removeGuestAt(index)}
                 />
           ))}
       </ul>
@@ -29,6 +32,8 @@ GustsList.defaultProp = {
   toggleEditingAt: () => {},
   setNameAt: () => {},
   isFiltered: false,
+  removeGuestAt: () => {},
+  GuestPending: '',
 };
 
 GustsList.propTypes = {
@@ -37,6 +42,8 @@ GustsList.propTypes = {
   toggleEditingAt: PropTypes.func.isRequired,
   setNameAt: PropTypes.func.isRequired,
   isFiltered: PropTypes.bool.isRequired,
+  removeGuestAt: PropTypes.func.isRequired,
+  GuestPending: PropTypes.string.isRequired,
 };
 
 export default GustsList;

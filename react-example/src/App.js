@@ -3,15 +3,18 @@ import './App.css';
 
 import GuestsList from './Guests/GustsList';
 import Statedata from './helpers/Statedata';
+import GuestCounter from './Guests/GuestsCounter';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isFiltered: false,
+      pendingGuest: '',
       guests: [],
     };
     this.setNameAt = this.setNameAt.bind(this);
+    this.removeGuestAt = this.removeGuestAt.bind(this);
   }
 
   componentDidMount() {
@@ -29,7 +32,7 @@ class App extends Component {
             }
             return guest;
         })
-    });
+    }); 
   }
 
   toggleConfirmationAt(index) {
@@ -60,19 +63,61 @@ class App extends Component {
       })
   }
 
+  handleNameInput(e) {
+      this.setState({
+        pendingGuest: e.target.value
+      });
+  }
+
+  newGuestSubmitHandler(e) {
+      e.preventDefault();
+      this.setState({
+          guests: [
+              {
+                  name: this.state.pendingGuest,
+                  isConfirmed: false,
+                  isEditing: false,
+                  id: Math.floor(Math.random() * (100 - 0 + 1)) + 0
+              },
+              ...this.state.guests
+          ],
+          pendingGuest: ''
+      })
+  }
+
+  removeGuestAt(index) {
+      this.setState({
+          guests : [
+            ...this.state.guests.slice(0, index),
+            ...this.state.guests.slice(index + 1)
+          ]
+      });
+      console.log(index);
+  }
+
   getTotalInvited = () => this.state.guests.length;
 
+  getAttendingGuests = () => 
+      this.state.guests.reduce(
+          (total, guest) => guest.isConfirmed ? total + 1 : total,
+       0
+    );
+
   render() {
+    const totlaInvited = this.getTotalInvited();
+    const numberAttending = this.getAttendingGuests();
+    const numberUnconfirmed = totlaInvited - numberAttending;
     return (
         <div className="App">
             <header>
                 <h1>RSVP</h1>
                 <p>A Treehouse App</p>
-                <form>
+                <form onSubmit={e => this.newGuestSubmitHandler(e)}>
                     <input
                       type="text"
-                      value="Safia"
+                      value={this.state.pendingGuest}
                       placeholder="Invite Someone"
+                      onChange={e => this.handleNameInput(e)}
                     />
                     <button
                       type="submit"
@@ -96,27 +141,20 @@ class App extends Component {
                         /> Hide those who havent responded
                     </label>
                 </div>
-                <table className="counter">
-                    <tbody>
-                        <tr>
-                            <td>Attending:</td>
-                            <td>2</td>
-                        </tr>
-                        <tr>
-                            <td>Unconfirmed:</td>
-                            <td>1</td>
-                        </tr>
-                        <tr>
-                            <td>Total:</td>
-                            <td>{ this.getTotalInvited() }</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <GuestCounter 
+                    getTotalInvited={totlaInvited}
+                    numberAttending={numberAttending}
+                    numberUnconfirmed={numberUnconfirmed}
+                />
+
                 <GuestsList guests={this.state.guests}
                     toggleConfirmationAt={index => this.toggleConfirmationAt(index)}
                     toggleEditingAt={index => this.toggleEditingAt(index)}
                     setNameAt={this.setNameAt}
-                    isFiltered={this.state.isFiltered} />
+                    isFiltered={this.state.isFiltered}
+                    removeGuestAt={this.removeGuestAt}
+                    GuestPending={this.state.pendingGuest} 
+                />
             </div>
         </div>
     );

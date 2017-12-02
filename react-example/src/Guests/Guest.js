@@ -15,6 +15,7 @@ function Guests(props) {
           <label htmlFor="confirmed">
               <input
                 type="checkbox"
+                id="confirmed"
                 checked={props.isConfirmed}
                 onChange={props.handleConfirmation}
               /> Confirmed
@@ -22,7 +23,7 @@ function Guests(props) {
           <button onClick={() => props.handletoggleEditing()}>
               {props.isEditing ? 'Save' : 'edit'}
           </button>
-          <button>remove</button>
+          <button onClick={props.handleRemove}>remove</button>
       </li>
   );
 }
@@ -34,6 +35,7 @@ Guests.defaultProp = {
   handleConfirmation: false,
   handletoggleEditing: false,
   setName: () => {},
+  handleRemove: () => {},
 };
 
 Guests.propTypes = {
@@ -43,6 +45,7 @@ Guests.propTypes = {
   handletoggleEditing: PropTypes.func.isRequired,
   isEditing: PropTypes.bool.isRequired,
   setName: PropTypes.func.isRequired,
+  handleRemove: PropTypes.func.isRequired,
 };
 
 export default Guests;
